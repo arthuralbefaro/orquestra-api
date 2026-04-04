@@ -38,6 +38,7 @@ Banco de Dados (PostgreSQL)
 Fila (Queue - Database)
       ↓
 Worker (Processamento assíncrono)
+```
 
 ### Backend
 - Laravel
