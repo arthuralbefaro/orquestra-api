@@ -1,78 +1,255 @@
-# Orquestra API
+# 🚀 Orquestra API
 
-Sistema full stack para gerenciamento e execução de automações, com foco em observabilidade, organização de projetos e processamento assíncrono.
+Plataforma de automação backend com execução assíncrona, filas, monitoramento de execuções e métricas operacionais.
 
-## Visão geral
+Projeto focado em arquitetura backend moderna, observabilidade e boas práticas de desenvolvimento.
 
-O Orquestra API é uma aplicação desenvolvida para centralizar projetos, automações e execuções em uma interface moderna e operacional. A plataforma permite cadastrar fluxos, disparar execuções manualmente, acompanhar histórico, visualizar métricas de desempenho e trabalhar com processamento em fila.
+---
 
-## Principais funcionalidades
+## 🧠 Visão do Projeto
 
-- Autenticação com Laravel Sanctum
-- Cadastro e login de usuários
-- CRUD completo de projetos
-- CRUD completo de automações
-- Execução manual de automações
-- Retry de execuções
-- Histórico de runs por automação
-- Dashboard com métricas operacionais
-- Ranking de automações mais executadas
-- Atualização visual de estados de execução
-- Tema dark/light
-- Interface moderna com React + TypeScript + Vite
-- Processamento assíncrono com Laravel Queue
+O **Orquestra API** simula um sistema real de automação empresarial, onde usuários podem:
 
-## Arquitetura do Sistema
+- criar projetos
+- definir automações
+- executar fluxos
+- monitorar execuções
+- analisar métricas operacionais
 
-O Orquestra API segue uma arquitetura full stack desacoplada, com separação clara entre backend (API) e frontend (interface), além de suporte a processamento assíncrono via filas.
+A proposta é reproduzir conceitos vistos em plataformas como Zapier, n8n e sistemas internos de automação corporativa, mas com implementação própria, foco em backend e estrutura pronta para evolução.
 
-### Visão geral da arquitetura
+---
 
-```text
-Frontend (React)
-      ↓
-API REST (Laravel)
-      ↓
-Banco de Dados (PostgreSQL)
-      ↓
-Fila (Queue - Database)
-      ↓
-Worker (Processamento assíncrono)
-```
+## ⚙️ Stack Tecnológica
 
 ### Backend
+- PHP 8.3+
 - Laravel
 - PostgreSQL
-- Sanctum
-- Queue (database)
+- Laravel Sanctum
+- Queue com driver de banco
+- Pest / PHPUnit
 
 ### Frontend
 - React
 - TypeScript
 - Vite
-- Recharts
-- React Router
+- Bootstrap
 
-## Como rodar
+### DevOps
+- Git
+- GitHub Actions
+- Docker (opcional)
 
-### Backend
-cd backend
-composer install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate
-php artisan queue:table
-php artisan migrate
-php artisan serve
+---
 
-### Worker
-php artisan queue:work
+## 🏗️ Arquitetura
 
-### Frontend
-cd frontend
-npm install
-npm run dev
+    app/
+     ├── Http/
+     │   ├── Controllers/Api/
+     │   └── Requests/
+     ├── Jobs/
+     ├── Models/
+    database/
+     ├── migrations/
+     └── seeders/
+    routes/
+     └── api.php
+    tests/
+     └── Feature/
 
-## Autor
+### Fluxo de execução
 
-Arthur Nascimento Albefaro Penna
+    Usuário → API → Automação → Run → Job em fila → Resultado
+
+---
+
+## 🔥 Funcionalidades
+
+### 🔐 Autenticação
+- registro de usuários
+- login com geração de token
+- logout
+- rota para usuário autenticado
+- proteção de rotas com Sanctum
+
+### 📁 Projetos
+- criação de projetos
+- listagem por usuário
+- atualização
+- remoção
+- isolamento de dados por usuário autenticado
+
+### ⚙️ Automações
+- criação e gerenciamento de automações
+- associação com projetos
+- configuração de execução
+- execução manual
+
+### ▶️ Execuções
+- criação de runs
+- status de processamento
+- retry manual de falhas
+- histórico de execuções
+
+### 📊 Observabilidade
+- tempo de execução em milissegundos
+- quantidade de tentativas
+- status da execução
+- erro armazenado em caso de falha
+- payload de retorno
+
+### ❤️ Health Check
+- status da aplicação
+- status do banco
+- endpoint de verificação operacional
+
+### 📈 Métricas
+- total de execuções
+- execuções com sucesso
+- execuções com falha
+- execuções em fila
+- execuções em andamento
+- taxa de sucesso
+- tempo médio de execução
+- execuções do dia
+
+---
+
+## 🧪 Testes
+
+O projeto possui testes automatizados para:
+
+- autenticação
+- projetos
+- automações
+- execuções
+- health check
+- métricas
+
+Para rodar os testes:
+
+    php artisan test
+
+---
+
+## 🚀 Como rodar o projeto
+
+### 1. Clonar o repositório
+
+    git clone https://github.com/arthuralbefaro/orquestra-api.git
+    cd orquestra-api
+
+### 2. Entrar no backend
+
+    cd backend
+
+### 3. Instalar dependências
+
+    composer install
+
+### 4. Configurar ambiente
+
+    cp .env.example .env
+    php artisan key:generate
+
+### 5. Configurar o banco PostgreSQL no arquivo .env
+
+Exemplo:
+
+    DB_CONNECTION=pgsql
+    DB_HOST=127.0.0.1
+    DB_PORT=5432
+    DB_DATABASE=orquestra
+    DB_USERNAME=postgres
+    DB_PASSWORD=postgres
+
+### 6. Rodar migrations e seeders
+
+    php artisan migrate
+    php artisan db:seed
+
+### 7. Subir a aplicação
+
+    php artisan serve
+
+### 8. Subir o worker da fila
+
+Em outro terminal:
+
+    php artisan queue:work
+
+---
+
+## 👤 Usuário de teste
+
+    email: arthur@orquestra.dev
+    senha: 12345678
+
+---
+
+## 🔌 Principais endpoints
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | /api/health | Verifica status da API |
+| POST | /api/register | Registra novo usuário |
+| POST | /api/login | Realiza login |
+| POST | /api/logout | Realiza logout |
+| GET | /api/me | Retorna usuário autenticado |
+| GET | /api/projects | Lista projetos |
+| POST | /api/projects | Cria projeto |
+| GET | /api/automations | Lista automações |
+| POST | /api/automations | Cria automação |
+| POST | /api/automations/{id}/run | Executa automação |
+| POST | /api/runs/{id}/retry | Reprocessa execução |
+| GET | /api/metrics | Retorna métricas operacionais |
+
+---
+
+## 🧠 Diferenciais Técnicos
+
+- arquitetura backend organizada
+- autenticação com Laravel Sanctum
+- processamento assíncrono com filas
+- observabilidade de execuções
+- métricas operacionais reais
+- testes automatizados
+- integração contínua com GitHub Actions
+- estrutura pronta para expansão
+
+---
+
+## 📌 Próximos passos
+
+- dashboard frontend com gráficos
+- filtros por status e data
+- agendamento automático de execuções
+- webhooks
+- retry automático com backoff
+- logs estruturados
+- monitoramento visual no frontend
+
+---
+
+## 👨‍💻 Autor
+
+Desenvolvido por **Arthur Albefaro**.
+
+- GitHub: https://github.com/arthuralbefaro
+- LinkedIn: adicione aqui o seu link
+
+---
+
+## ⭐ Considerações finais
+
+O **Orquestra API** foi construído com foco em:
+
+- boas práticas de backend
+- código limpo
+- organização de projeto
+- arquitetura escalável
+- simulação de cenário real de empresa
+
+Mais do que um CRUD simples, este projeto busca demonstrar domínio de autenticação, filas, processamento assíncrono, testes e observabilidade, aproximando a implementação de um contexto profissional.
