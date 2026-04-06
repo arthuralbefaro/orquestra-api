@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { login as loginRequest, logout as logoutRequest, me, register as registerRequest } from '../api/auth';
+import { authStorage } from '../api/axios';
 import type { User } from '../types';
 import { AuthContext } from './auth-context';
 
@@ -10,7 +11,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let ignore = false;
-    const token = localStorage.getItem('orquestra_token');
+
+    const token = authStorage.getToken();
 
     if (!token) {
       setLoading(false);
@@ -24,7 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       })
       .catch(() => {
-        localStorage.removeItem('orquestra_token');
+        authStorage.clearToken();
         if (!ignore) {
           setUser(null);
         }
@@ -35,14 +37,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       });
 
+    const handleUnauthorized = () => {
+      authStorage.clearToken();
+      setUser(null);
+    };
+
+    window.addEventListener('orquestra:unauthorized', handleUnauthorized);
+
     return () => {
       ignore = true;
+      window.removeEventListener('orquestra:unauthorized', handleUnauthorized);
     };
   }, []);
 
   async function login(payload: { email: string; password: string }) {
-    const response = await loginRequest({ ...payload, device_name: 'react-web' });
-    localStorage.setItem('orquestra_token', response.data.token);
+    const response = await loginRequest({
+      ...payload,
+      device_name: 'react-web',
+    });
+
+    authStorage.setToken(response.data.token);
     setUser(response.data.user);
   }
 
@@ -53,7 +67,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     password_confirmation: string;
   }) {
     const response = await registerRequest(payload);
-    localStorage.setItem('orquestra_token', response.data.token);
+
+    authStorage.setToken(response.data.token);
     setUser(response.data.user);
   }
 
@@ -61,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await logoutRequest();
     } finally {
-      localStorage.removeItem('orquestra_token');
+      authStorage.clearToken();
       setUser(null);
     }
   }

@@ -7,13 +7,16 @@ use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\RunController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\MetricsController;
 
-Route::get('/health', [HealthController::class, 'index'])->middleware('throttle:30,1');
+Route::get('/health', HealthController::class);
 
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:10,1');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/metrics', MetricsController::class);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 

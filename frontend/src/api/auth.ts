@@ -23,6 +23,7 @@ export async function register(payload: {
     email: string;
     password: string;
     password_confirmation: string;
+    device_name?: string;
 }) {
     const {data} = await api.post<AuthResponse>('/register', payload);
     return data;

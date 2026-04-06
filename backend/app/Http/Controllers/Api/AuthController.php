@@ -21,8 +21,8 @@ class AuthController extends Controller
         ]);
 
         $token = $user->createToken(
-            'default',
-            ['projects:read', 'projects:write', 'automations:write']
+            $request->input('device_name', 'react-web'),
+            $this->abilities()
         )->plainTextToken;
 
         return response()->json([
@@ -45,8 +45,8 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken(
-            $request->input('device_name', 'default-device'),
-            ['projects:read', 'projects:write', 'automations:write']
+            $request->input('device_name', 'react-web'),
+            $this->abilities()
         )->plainTextToken;
 
         return response()->json([
@@ -72,5 +72,18 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Logout realizado com sucesso.',
         ]);
+    }
+
+    private function abilities(): array
+    {
+        return [
+            'dashboard:read',
+            'projects:read',
+            'projects:write',
+            'automations:read',
+            'automations:write',
+            'runs:read',
+            'runs:write',
+        ];
     }
 }

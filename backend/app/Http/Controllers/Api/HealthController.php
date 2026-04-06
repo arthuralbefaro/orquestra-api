@@ -8,19 +8,32 @@ use Illuminate\Support\Facades\DB;
 
 class HealthController extends Controller
 {
-    public function index(): JsonResponse
+    public function __invoke(): JsonResponse
     {
+        $databaseOk = false;
+        $databaseConnection = config('database.default');
+
         try {
-            DB::select('select 1');
-            $database = 'ok';
+            DB::connection()->getPdo();
+            DB::select('SELECT 1');
+            $databaseOk = true;
         } catch (\Throwable $e) {
-            $database = 'fail';
+            $databaseOk = false;
         }
 
-        return response()->json([
-            'status' => 'ok',
-            'database' => $database,
+        $payload = [
+            'status' => $databaseOk ? 'ok' : 'degraded',
+            'service' => config('app.name', 'orquestra-api'),
+            'database' => [
+                'status' => $databaseOk ? 'ok' : 'error',
+                'connection' => $databaseConnection,
+            ],
             'timestamp' => now()->toISOString(),
-        ]);
+        ];
+
+        return response()->json(
+            $payload,
+            $databaseOk ? 200 : 503
+        );
     }
 }
